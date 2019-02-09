@@ -34,7 +34,7 @@ def main():
     test_ids = np.sort([k.split('.')[0] for k in os.listdir('./data/test/test_images/')])
     lines = [test_ids[i] + ',' + str(int(pred[i][0])) for i in range(len(test_ids))]
     
-    f = open('submit_' + model_name.split('.')[0] + '.csv', 'w')
+    f = open('./submissions/submit_' + model_name.split('.')[0] + '.csv', 'w')
     f.write('id,label\n')
     for l in lines:
         f.write(l+"\n")
