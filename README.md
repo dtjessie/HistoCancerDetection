@@ -11,5 +11,7 @@ train_simpleCNN.py builds the simpleCNN.h5 model. A trained version is saved in 
 generate_submission.py uses the .h5 to create a submission for Kaggle
 
 TO DO: add droput, data augmentation to simpleCNN model
+
        add callbacks, checkpointing to the training routine
+
        run a pre-trained model for comparison--NASNet has good results on leaderboard
