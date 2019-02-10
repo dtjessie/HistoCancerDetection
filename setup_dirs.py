@@ -38,8 +38,8 @@ def train_valid_dict(df, frac_valid = .1):
 
 def main():
     # Make subdirectories
-    original_data_dir = './original_data'
-    base_dir = './data'
+    original_data_dir = '/USE/ABS/PATH/TO/original_data'
+    base_dir = 'USE/ABS/PATH/TO/data'
 
     train_dir = os.path.join(base_dir, 'train')
     validation_dir = os.path.join(base_dir, 'validation')
