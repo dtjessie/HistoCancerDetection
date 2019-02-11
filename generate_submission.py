@@ -8,7 +8,7 @@ from keras.models import load_model
 from keras.preprocessing.image import ImageDataGenerator
 
 def main():
-    model_name = 'KaiYu_ZhuTu_v1.h5'
+    model_name = 'pretrain_NASNet.h5'
     prediction_thresh = .6
     batch_size = 128
     
@@ -16,7 +16,7 @@ def main():
     num_test_samples = len(os.listdir('./data/test/test_images/'))
     steps = num_test_samples / batch_size
         
-    model = load_model(model_name)
+    model = load_model('./models/' + model_name)
     model.summary()
         
     test_datagen = ImageDataGenerator(rescale = 1.0/255)

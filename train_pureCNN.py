@@ -1,8 +1,7 @@
 ##################################################################
-# This builds a simple CNN with 4 convolution layers followed by
-# a dense 512 layer.
-# No tweaking or optimization has been done; overfits after about
-# 10 epochs or so.
+# This builds a simple CNN with for classifying. No dense layers.
+# No tweaking or optimization has been done; validation loss
+# is unstable...
 
 import os
 from keras.preprocessing.image import ImageDataGenerator
@@ -13,7 +12,7 @@ from datetime import datetime
 
 def main():
     now = datetime.now().strftime('%Y%m%d%H%M%S')
-    model_name = 'simpleCNN_' + now + '.h5'
+    model_name = 'pureCNN_' + now + '.h5'
     batch_size = 256
     num_epochs = 30
     
@@ -26,17 +25,17 @@ def main():
     
     # Build our cool model
     input_tensor = Input(shape = (96,96,3))
-    x = layers.Conv2D(32, (3,3), activation = 'relu')(input_tensor)
+    x = layers.Conv2D(32, (2,2), activation = 'relu', padding = 'same')(input_tensor)
+    x = layers.Conv2D(32, (2,2), activation = 'relu', padding = 'same')(x)
     x = layers.MaxPooling2D((2,2))(x)
-    x = layers.Conv2D(64, (3,3), activation = 'relu')(x)
+    x = layers.Conv2D(64, (2,2), activation = 'relu', padding = 'same')(x)
+    x = layers.Conv2D(64, (2,2), activation = 'relu', padding = 'same')(x)
     x = layers.MaxPooling2D((2,2))(x)
-    x = layers.Conv2D(128, (3,3), activation = 'relu')(x)
-    x = layers.MaxPooling2D((2,2))(x)
-    x = layers.Conv2D(128, (3,3), activation = 'relu')(x)
+    x = layers.Conv2D(128, (3,3), activation = 'relu', padding = 'same')(x)
+    x = layers.Conv2D(128, (3,3), activation = 'relu', padding = 'same')(x)
     x = layers.MaxPooling2D((2,2))(x)
     x = layers.Flatten()(x)
     x = layers.Dropout(.5)(x)
-    x = layers.Dense(512, activation = 'relu')(x)
     output_tensor = layers.Dense(1, activation = 'sigmoid')(x)
 
     model = Model(input_tensor, output_tensor)

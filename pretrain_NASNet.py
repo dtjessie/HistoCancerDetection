@@ -7,14 +7,15 @@
 import os
 from keras.preprocessing.image import ImageDataGenerator
 from keras import Input, layers, Model, callbacks
+from keras.applications.nasnet import NASNetMobile
 from keras.optimizers import Adam
 import matplotlib.pyplot as plt
 from datetime import datetime
 
 def main():
     now = datetime.now().strftime('%Y%m%d%H%M%S')
-    model_name = 'simpleCNN_' + now + '.h5'
-    batch_size = 256
+    model_name = 'pretrain_NASNet_' + now + '.h5'
+    batch_size = 128
     num_epochs = 30
     
     train_dir = './data/train/'
@@ -22,33 +23,37 @@ def main():
     
     num_train_samples = len(os.listdir('./data/train/cancer')) + len(os.listdir('./data/train/healthy'))
     num_valid_samples = len(os.listdir('./data/validation/cancer')) + len(os.listdir('./data/validation/healthy'))
-    
-    
+       
     # Build our cool model
-    input_tensor = Input(shape = (96,96,3))
-    x = layers.Conv2D(32, (3,3), activation = 'relu')(input_tensor)
-    x = layers.MaxPooling2D((2,2))(x)
-    x = layers.Conv2D(64, (3,3), activation = 'relu')(x)
-    x = layers.MaxPooling2D((2,2))(x)
-    x = layers.Conv2D(128, (3,3), activation = 'relu')(x)
-    x = layers.MaxPooling2D((2,2))(x)
-    x = layers.Conv2D(128, (3,3), activation = 'relu')(x)
-    x = layers.MaxPooling2D((2,2))(x)
-    x = layers.Flatten()(x)
-    x = layers.Dropout(.5)(x)
-    x = layers.Dense(512, activation = 'relu')(x)
-    output_tensor = layers.Dense(1, activation = 'sigmoid')(x)
-
+    input_tensor = Input(shape = (96, 96, 3))
+    NASNet = NASNetMobile(include_top = False, input_shape = (96, 96, 3))
+    x = NASNet(input_tensor)
+    x1 = layers.GlobalMaxPooling2D()(x)
+    x2 = layers.GlobalAveragePooling2D()(x)
+    x3 = layers.Flatten()(x)
+    z = layers.Concatenate(axis=-1)([x1, x2, x3])
+    z = layers.Dropout(0.5)(z)
+    z = layers.Dense(512, activation = 'relu')(z)
+    output_tensor = layers.Dense(1, activation="sigmoid")(z)
+    
     model = Model(input_tensor, output_tensor)
     model.summary()
     
-    # Get things ready to train: should adjust learning rate, etc.
-    model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['acc'])
-    train_datagen = ImageDataGenerator(rescale = 1.0/255,
-                                       rotation_range = 90,
-                                       horizontal_flip = True)
-    valid_datagen = ImageDataGenerator(rescale = 1.0/255)
+    # Get things ready to train: tweak learning rate, etc.
+    model.compile(optimizer = Adam(.00001), loss = 'binary_crossentropy', metrics = ['acc'])
+    train_datagen = ImageDataGenerator(samplewise_center = True,
+                                       samplewise_std_normalization = True,
+                                       rotation_range = 20,
+                                       horizontal_flip = True,
+                                       vertical_flip = True,
+                                       shear_range = 10)
     
+    valid_datagen = ImageDataGenerator(samplewise_center = True,
+                                       samplewise_std_normalization = True)
+    
+        
+    # In the future, we should do some data augmentation
+    # especially noticing that the cancer is in the center of the image
     train_generator = train_datagen.flow_from_directory(train_dir,
                                                         target_size = (96, 96),
                                                         batch_size = batch_size,
@@ -67,7 +72,7 @@ def main():
                                            monitor = 'val_loss',
                                            save_best_only = True)
     early_stop = callbacks.EarlyStopping(monitor = 'val_acc',
-                                         patience = 3)
+                                         patience = 5)
     callback_list = [checkpoint, early_stop]
     
     # Training begins
