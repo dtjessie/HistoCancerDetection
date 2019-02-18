@@ -6,39 +6,40 @@ import numpy as np
 import os
 from keras.models import load_model
 from keras.preprocessing.image import ImageDataGenerator
+from data_generator import test_gen
 
 def main():
-    model_name = 'pretrain_NASNet.h5'
-    prediction_thresh = .6
+    model_name = 'pretrain_NASNet_2019-02-12_22:03:53.h5'
     batch_size = 128
     
-    test_dir = './data/test/'
     num_test_samples = len(os.listdir('./data/test/test_images/'))
     steps = num_test_samples / batch_size
         
     model = load_model('./models/' + model_name)
     model.summary()
         
-    test_datagen = ImageDataGenerator(rescale = 1.0/255)
-    test_generator = test_datagen.flow_from_directory(test_dir,
-                                                      target_size = (96, 96),
-                                                      batch_size = batch_size,
-                                                      class_mode = 'binary',
-                                                      shuffle = False)
-    output = model.predict_generator(test_generator,
-                                     steps = steps + 1,
-                                     verbose = 1)
+    test_generator = test_gen(batch_size)
+    #################################################################
+    # Test-time augmentation flipping image gives about a 1% boost! #    
+    #################################################################
+    pred = []
+    for i in range(steps + 1):
+        x = test_generator.next()
+        X = np.array(x[0])
+        pred_0 = ((model.predict(X).ravel()*model.predict(X[:, ::-1, :, :]).ravel()*
+                   model.predict(X[:, ::-1, ::-1,:]).ravel()*model.predict(X[:, :, ::-1, :]).ravel())**0.25).tolist()
+        pred += pred_0
+   
+    fnames = test_generator.filenames
+    test_ids = [k.split('/')[1][:-4] for k in fnames]
+    lines = [test_ids[i] + ',' + str(float(pred[i])) for i in range(len(test_ids))]
     
-    pred = np.floor_divide(output, prediction_thresh)
-    
-    test_ids = np.sort([k.split('.')[0] for k in os.listdir('./data/test/test_images/')])
-    lines = [test_ids[i] + ',' + str(int(pred[i][0])) for i in range(len(test_ids))]
-    
-    f = open('./submissions/submit_' + model_name.split('.')[0] + '.csv', 'w')
+    f = open('./submissions/' + model_name.split('.')[0] + '.csv', 'w')
     f.write('id,label\n')
     for l in lines:
         f.write(l+"\n")
     f.close()
+    print("Done! Submission saved in ./submissions/" + model_name.split('.')[0] + '.csv')
     
 if __name__ == "__main__":
     main()

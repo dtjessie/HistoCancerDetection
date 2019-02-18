@@ -19,7 +19,7 @@ import os
 import pandas as pd
 import numpy as np
 
-VALID_FRAC = .2  # What proportion of train to use as validation?
+VALID_FRAC = .1  # What proportion of train to use as validation?
 RANDOM_SEED = 8  # For replicability
 
 def train_valid_dict(df, frac_valid = .1):
@@ -44,7 +44,8 @@ def main():
     train_dir = os.path.join(base_dir, 'train')
     validation_dir = os.path.join(base_dir, 'validation')
     test_dir = os.path.join(base_dir, 'test')
-
+    test_images_dir = os.path.join(test_dir, 'test_images')
+    
     train_cancer_dir = os.path.join(train_dir, 'cancer')
     train_healthy_dir = os.path.join(train_dir, 'healthy')
     validation_cancer_dir = os.path.join(validation_dir, 'cancer')
@@ -60,6 +61,7 @@ def main():
         os.mkdir(train_healthy_dir)
         os.mkdir(validation_cancer_dir)
         os.mkdir(validation_healthy_dir)
+        os.mkdir(test_images_dir)
     except OSError as e:
         print("OSError:", e)
         return 0
@@ -92,7 +94,7 @@ def main():
     fnames = [k for k in os.listdir(os.path.join(original_data_dir, 'test_images'))]
     for fname in fnames:
         src = os.path.join(original_data_dir, 'test_images', fname)
-        dst = os.path.join(test_dir, fname)
+        dst = os.path.join(test_images_dir, fname)
         os.symlink(src, dst)
     
     num_train_cancer = len(os.listdir(train_cancer_dir))
@@ -103,7 +105,7 @@ def main():
     print('total training healthy images:', num_train_healthy)
     print('total validation cancer images:', num_valid_cancer)
     print('total validation healthy images:', num_valid_healthy)
-    print('total test images:', len(os.listdir(test_dir)))
+    print('total test images:', len(os.listdir(test_images_dir)))
 
     
 if __name__ == "__main__":
