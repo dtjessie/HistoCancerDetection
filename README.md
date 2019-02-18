@@ -3,6 +3,10 @@ Setting up our Kaggle team
 
 This repo contains some python files for the competition https://www.kaggle.com/c/histopathologic-cancer-detection
 
+Helper files are data_generator, generate_submission, make_plots, setup_dirs.
+
+Main files and model definitions are in the train_\*, pretrain_\* files.
+
 Once the dataset is put into the original_dataset directory, you can run setup_dirs.py to organize the data that
 is needed for the train.simpleCNN.py script
 
@@ -10,8 +14,6 @@ train_simpleCNN.py builds the simpleCNN.h5 model. A trained version is saved in 
 
 generate_submission.py uses the .h5 to create a submission for Kaggle
 
-Added some simple callbacks, data augmentation, though this should be standardized in a 
-separate file. 
+CSV logs and plots are saved in ./logs and ./models, respectively.
 
-To Do: Training is unstable--validation set loss/accuracy does not converge.
-       Ran train_NASNet.py with Adam(lr = .0001) seems better, but is slow going.
+To Do: Train other architectures and build an ensemble
