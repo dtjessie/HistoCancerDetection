@@ -17,7 +17,7 @@ from make_plots import make_plots
 
 def main():
     now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-    model_name = 'retrain_vgg16_' + now + '_2.h5'
+    model_name = 'pretrain_vgg16_2_' + now + '.h5'
     batch_size = 32
     num_epochs = 30
     lr = .0001
