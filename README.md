@@ -16,4 +16,4 @@ generate_submission.py uses the .h5 to create a submission for Kaggle
 
 CSV logs and plots are saved in ./logs and ./models, respectively.
 
-To Do: Train other architectures and build an ensemble
+To Do: Try a couple more architectures and ensemble to reach .98 on public leaderboard
