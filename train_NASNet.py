@@ -23,7 +23,7 @@ def main():
     num_train_samples = len(os.listdir('./data/train/cancer')) + len(os.listdir('./data/train/healthy'))
     num_valid_samples = len(os.listdir('./data/validation/cancer')) + len(os.listdir('./data/validation/healthy'))
        
-    # Build our cool model
+    # Build our model
     input_tensor = Input(shape = (96, 96, 3))
     NASNet = NASNetMobile(include_top = False, input_shape = (96, 96, 3))
     x = NASNet(input_tensor)
