@@ -16,7 +16,7 @@ generate_submission.py uses the .h5 to create a submission for Kaggle
 
 CSV logs and plots are saved in ./logs and ./models, respectively.
 
-VGG16 and NASNet are fine-tuned using files in respective folders
+VGG16 and NASNet can be fine-tuned using train_VGG.py and train_NASNet.py.
 
 Current best (.9673 on leaderboard) uses ensemble of VGG16 and NASNet.
 
