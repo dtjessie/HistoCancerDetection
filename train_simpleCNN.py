@@ -25,7 +25,7 @@ def main():
     num_valid_samples = len(os.listdir('./data/validation/cancer')) + len(os.listdir('./data/validation/healthy'))
     
     
-    # Build our cool model
+    # Build our model
     input_tensor = Input(shape = (96,96,3))
     x = layers.Conv2D(32, (3,3))(input_tensor)
     x = layers.MaxPooling2D((2,2))(x)
