@@ -19,5 +19,3 @@ CSV logs and plots are saved in ./logs and ./models, respectively.
 VGG16 and NASNet can be fine-tuned using train_VGG.py and train_NASNet.py.
 
 Current best (.9673 on leaderboard) uses ensemble of VGG16 and NASNet.
-
-To Do: Try a couple more architectures and ensemble to reach .98 on public leaderboard
