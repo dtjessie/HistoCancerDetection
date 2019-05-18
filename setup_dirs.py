@@ -8,8 +8,8 @@
 #               |
 #                --> test_images/
 #               |
-#                --> train_images/ 
-#               |
+#                --> train_images/
+#
 #                --> train_labels.csv
 #
 # test_images/ and train_images/ contain the .tif image files
@@ -22,10 +22,11 @@ import numpy as np
 VALID_FRAC = .1  # What proportion of train to use as validation?
 RANDOM_SEED = 8  # For replicability
 
-def train_valid_dict(df, frac_valid = .1):
+
+def train_valid_dict(df, frac_valid=.1):
     # This splits the dataset in df into train/validation subsets
     n = len(df)
-    np.random.seed(seed = RANDOM_SEED)
+    np.random.seed(seed=RANDOM_SEED)
     random = np.random.rand(n)
     train_id, valid_id = [], []
     for i in range(n):
@@ -36,6 +37,7 @@ def train_valid_dict(df, frac_valid = .1):
     partition = {'train': train_id, 'validation': valid_id}
     return partition
 
+
 def main():
     # Make subdirectories
     original_data_dir = '/home/dtj/ml/kaggle/histopathologic_cancer/original_data'
@@ -45,18 +47,18 @@ def main():
     validation_dir = os.path.join(base_dir, 'validation')
     test_dir = os.path.join(base_dir, 'test')
     test_images_dir = os.path.join(test_dir, 'test_images')
-    
+
     train_cancer_dir = os.path.join(train_dir, 'cancer')
     train_healthy_dir = os.path.join(train_dir, 'healthy')
     validation_cancer_dir = os.path.join(validation_dir, 'cancer')
     validation_healthy_dir = os.path.join(validation_dir, 'healthy')
-    
-    try: 
+
+    try:
         os.mkdir(base_dir)
         os.mkdir(train_dir)
         os.mkdir(validation_dir)
         os.mkdir(test_dir)
-        
+
         os.mkdir(train_cancer_dir)
         os.mkdir(train_healthy_dir)
         os.mkdir(validation_cancer_dir)
@@ -65,16 +67,15 @@ def main():
     except OSError as e:
         print("OSError:", e)
         return 0
-    
-     
+
     # Split into train and validation sets
     # dictionaries labels and partition
     # will be used to make symlinks
     df = pd.read_csv(os.path.join(original_data_dir, 'train_labels.csv'))
     labels = dict(zip([k for k in df['id']], [v for v in df['label']]))
     partition = train_valid_dict(df, VALID_FRAC)
-    
-    # Make symlinks    
+
+    # Make symlinks
     for ID in partition['train']:
         fname = ID + '.tif'
         src = os.path.join(original_data_dir, 'train_images', fname)
@@ -96,7 +97,7 @@ def main():
         src = os.path.join(original_data_dir, 'test_images', fname)
         dst = os.path.join(test_images_dir, fname)
         os.symlink(src, dst)
-    
+
     num_train_cancer = len(os.listdir(train_cancer_dir))
     num_train_healthy = len(os.listdir(train_healthy_dir))
     num_valid_cancer = len(os.listdir(validation_cancer_dir))
@@ -107,6 +108,6 @@ def main():
     print('total validation healthy images:', num_valid_healthy)
     print('total test images:', len(os.listdir(test_images_dir)))
 
-    
+
 if __name__ == "__main__":
     main()

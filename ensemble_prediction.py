@@ -6,6 +6,7 @@
 import numpy as np
 import pandas as pd
 
+
 def main():
     # These submission files should already be sorted by 'id'
     model_1_name = './submissions/retrain_vgg16_2019-02-19_14:22:39_2.csv'
@@ -16,8 +17,6 @@ def main():
 
     vgg_pred = np.array(vgg.sort_values('id')['label'])
     nasnet_pred = np.array(nasnet.sort_values('id')['label'])
-
-    #sort_ids = vgg.sort_values('id')['id']
 
     geometric_avg = (vgg_pred*nasnet_pred)**.5
     arithmetic_avg = (vgg_pred + nasnet_pred)/2.0
@@ -36,6 +35,7 @@ def main():
     for l in ari_ens_lines:
         f.write(l+"\n")
     f.close()
+
 
 if __name__ == "__main__":
     main()
